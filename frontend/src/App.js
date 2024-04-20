@@ -1,18 +1,19 @@
 import logo from './logo.svg';
 import './App.css';
-
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/Login';
+import Chat from './components/Chat';
 
 function App() {
   return (
-    
-      <div className="App">
-        <header className="App-header">
-          <h1>hi</h1>
-          <Button colorScheme='blue'>Button</Button>
-        </header>
-      </div>
-    
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/chat/" element={<Chat />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
