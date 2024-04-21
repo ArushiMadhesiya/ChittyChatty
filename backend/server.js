@@ -2,10 +2,17 @@ const express=require('express');
 const dotenv=require('dotenv');
 const chats= require('./chats')
 const cors = require("cors");
+const UserRoutes=require('./routes/UserRoutes');
+require('./config/db');
 dotenv.config();
 const app=express();
 app.use(cors());
+app.use(express.json());
 // apis
+app.get('/', (req,res)=>{
+  res.send("runnnning");
+})
+app.use('/api/user',UserRoutes);
 // sendig all chats
 app.get('/chat', (req,res)=>{
   res.send(chats);
