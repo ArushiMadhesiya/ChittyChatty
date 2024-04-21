@@ -3,16 +3,15 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
-//import axios from "axios";
+import axios from "axios";
 import { useState } from "react";
-//import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate=useNavigate();
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const toast = useToast();
-  //const history = useHistory();
-
   const [name, setName] = useState();
   const [email, setEmail] = useState();
   const [confirmpassword, setConfirmpassword] = useState();
@@ -21,12 +20,73 @@ const Signup = () => {
   const [picLoading, setPicLoading] = useState(false);
 
   const submitHandler = async () => {
-    
+    // full form submission
+   
+    let result=fetch("http://localhost:4000/api/user/signup",{
+      method:"post",
+      body: JSON.stringify({name,email,password,pic}),
+      headers: {
+        "Content-type": "application/json",
+      },
+    }
+  )
+  localStorage.setItem("userInfo",JSON.stringify({name,email}));
+  navigate('/chat');
+  
   };
-
+//--------for picture uploading
   const postDetails = (pics) => {
-    
-  };
+    setPicLoading(true);
+    if (pics === undefined) {
+      toast({
+        title: "Please Select an Image!",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    if (pics.type !== "image/jpeg" && pics.type !== "image/png") {
+      toast({
+        title: "Please Select a JPEG or PNG Image!",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+
+    if (pics.type === "image/jpeg" || pics.type === "image/png") {
+
+      const data = new FormData()
+      data.append("file", pics)
+      data.append("upload_preset", "ChittyChatty")
+      data.append("cloud_name", "dqjgpm1uh")
+      axios.post("https://api.cloudinary.com/v1_1/dqjgpm1uh/image/upload", data)
+        .then((result) => {
+          console.log("Cloudinary result:", result);
+          setPic(result.data.url.toString());
+          setPicLoading(false);
+          toast({
+            title: "Image uploaded successfully!",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        })
+        .catch((error) => {
+          console.log("Cloudinary error:", error);
+          setPicLoading(false);
+        });
+    }
+  }
+
+
 
   return (
     <VStack spacing="5px" >
